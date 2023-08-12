@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { ref, type Ref } from "vue";
-import { IconPlay, IconPause, CommonProgress } from "~/components";
+import {
+  IconPlay,
+  IconPause,
+  CommonProgress,
+  IconVolumeHigh,
+} from "~/components";
 
 export interface PlayerProps {
   src: string;
@@ -43,6 +48,13 @@ const padTime = (time: number) => {
   return time.toString().padStart(2, "0");
 };
 
+const changeVolume = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  if (video.value) {
+    video.value.volume = parseInt(target.value) / 100;
+  }
+};
+
 function displayTime() {
   const { currentTime } = video.value as HTMLVideoElement;
   const minutes = Math.floor(currentTime / 60);
@@ -76,6 +88,10 @@ function displayTime() {
         @mousedown="rewind"
       />
       <div class="player__time">{{ displayedTime }}</div>
+      <div class="player__volume d-flex align-items-center">
+        <icon-volume-high />
+        <input type="range" @input="changeVolume" />
+      </div>
     </div>
   </div>
 </template>
@@ -115,8 +131,7 @@ function displayTime() {
     transition: visibility 0.5s ease, opacity 0.5s ease;
     position: absolute;
     inset: 0;
-    transition-delay: 4s;
-    padding: 1rem;
+    transition-delay: 3s;
     background: linear-gradient(
         180deg,
         transparent,
@@ -132,6 +147,16 @@ function displayTime() {
     z-index: 15;
     font-size: 1.4rem;
     color: #fff;
+  }
+  &__volume {
+    position: absolute;
+    right: 20px;
+    bottom: 10px;
+    column-gap: 1rem;
+    & svg {
+      height: 20px;
+      width: 20px;
+    }
   }
   &:hover .player__mask {
     visibility: visible;

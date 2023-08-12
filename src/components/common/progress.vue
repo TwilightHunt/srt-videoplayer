@@ -15,6 +15,7 @@ progress {
   -webkit-appearance: none;
   width: 100%;
   height: clamp(1rem, 2vw, 1.5rem);
+  --bs-progress-border-radius: 0;
 }
 ::-webkit-progress-bar {
   background-color: #fff;

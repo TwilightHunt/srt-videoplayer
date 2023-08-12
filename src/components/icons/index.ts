@@ -2,3 +2,4 @@
 
 export { default as IconPause } from "./pause.vue";
 export { default as IconPlay } from "./play.vue";
+export { default as IconVolumeHigh } from "./volume-high.vue";
