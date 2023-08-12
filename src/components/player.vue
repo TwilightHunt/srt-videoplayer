@@ -10,6 +10,7 @@ defineProps<PlayerProps>();
 const video: Ref<HTMLVideoElement | undefined> = ref();
 const isVideoPlayed: Ref<boolean> = ref(false);
 const progress: Ref<HTMLProgressElement | undefined> = ref();
+const displayedTime: Ref<string> = ref("00:00");
 
 const play = () => {
   video.value?.play();
@@ -26,7 +27,9 @@ const displayProgress = () => {
   if (progress.value !== undefined) {
     progress.value.value = (100 * currentTime) / duration;
   }
+  displayTime();
 };
+
 const rewind = (event: MouseEvent) => {
   const target = event.target as HTMLProgressElement;
   const width = target.offsetWidth;
@@ -37,6 +40,18 @@ const rewind = (event: MouseEvent) => {
     video.value.currentTime = video.value.duration * (offsetX / width);
   }
 };
+
+const padTime = (time: number) => {
+  return time.toString().padStart(2, "0");
+};
+
+function displayTime() {
+  const { currentTime } = video.value as HTMLVideoElement;
+  const minutes = Math.floor(currentTime / 60);
+  const seconds = Math.floor(currentTime % 60);
+  const formattedTime = `${padTime(minutes)}:${padTime(seconds)}`;
+  displayedTime.value = formattedTime;
+}
 </script>
 
 <template>
@@ -44,20 +59,22 @@ const rewind = (event: MouseEvent) => {
     <video @timeupdate="displayProgress" ref="video" class="player__video">
       <source :src="src" />
     </video>
-
-    <div v-if="isVideoPlayed" class="player__icon" @click="pause">
-      <icon-pause id="pause" />
+    <div class="player__mask">
+      <div v-if="isVideoPlayed" class="player__icon" @click="pause">
+        <icon-pause id="pause" />
+      </div>
+      <div v-else class="player__icon" @click="play">
+        <icon-play id="play" />
+      </div>
+      <progress
+        class="cursor-pointer player__progress"
+        ref="progress"
+        max="100"
+        value="0"
+        @mousedown="rewind"
+      />
+      <div>{{ displayedTime }}</div>
     </div>
-    <div v-else class="player__icon" @click="play">
-      <icon-play id="play" />
-    </div>
-    <progress
-      class="cursor-pointer player__progress"
-      ref="progress"
-      max="100"
-      value="0"
-      @mousedown="rewind"
-    />
   </div>
 </template>
 
@@ -91,6 +108,19 @@ const rewind = (event: MouseEvent) => {
     padding: 1rem;
 
     width: 100%;
+  }
+  &__mask {
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.5s ease;
+    position: absolute;
+    inset: 0;
+    transition-delay: 4s;
+  }
+  &:hover .player__mask {
+    visibility: visible;
+    opacity: 1;
+    transition: all 0.5s ease;
   }
 }
 </style>
