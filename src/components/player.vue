@@ -73,7 +73,7 @@ function displayTime() {
         value="0"
         @mousedown="rewind"
       />
-      <div>{{ displayedTime }}</div>
+      <div class="player__time">{{ displayedTime }}</div>
     </div>
   </div>
 </template>
@@ -84,6 +84,7 @@ function displayTime() {
   & video {
     width: 100%;
     height: 100%;
+    display: flex;
   }
 
   &__icon {
@@ -112,10 +113,25 @@ function displayTime() {
   &__mask {
     visibility: hidden;
     opacity: 0;
-    transition: all 0.5s ease;
+    transition: visibility 0.5s ease, opacity 0.5s ease;
     position: absolute;
     inset: 0;
     transition-delay: 4s;
+    background: linear-gradient(
+        180deg,
+        transparent,
+        rgba(0, 0, 0, 0.5) 77%,
+        rgba(0, 0, 0, 0.5)
+      )
+      100% 100%/100% 50px no-repeat transparent;
+  }
+  &__time {
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+    z-index: 15;
+    font-size: 1.4rem;
+    color: #fff;
   }
   &:hover .player__mask {
     visibility: visible;
