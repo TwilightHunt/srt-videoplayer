@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, type Ref } from "vue";
-import { IconPlay, IconPause } from "~/components";
+import { IconPlay, IconPause, CommonProgress } from "~/components";
 
 export interface PlayerProps {
   src: string;
@@ -9,7 +9,6 @@ defineProps<PlayerProps>();
 
 const video: Ref<HTMLVideoElement | undefined> = ref();
 const isVideoPlayed: Ref<boolean> = ref(false);
-const progress: Ref<HTMLProgressElement | undefined> = ref();
 const displayedTime: Ref<string> = ref("00:00");
 
 const play = () => {
@@ -24,9 +23,8 @@ const pause = () => {
 
 const displayProgress = () => {
   const { duration, currentTime } = video.value as HTMLVideoElement;
-  if (progress.value !== undefined) {
-    progress.value.value = (100 * currentTime) / duration;
-  }
+  const progress = document.getElementById("progress") as HTMLProgressElement;
+  progress.value = (100 * currentTime) / duration;
   displayTime();
 };
 
@@ -56,7 +54,12 @@ function displayTime() {
 
 <template>
   <div class="player">
-    <video @timeupdate="displayProgress" ref="video" class="player__video">
+    <video
+      @ended="pause"
+      @timeupdate="displayProgress"
+      ref="video"
+      class="player__video"
+    >
       <source :src="src" />
     </video>
     <div class="player__mask">
@@ -66,9 +69,8 @@ function displayTime() {
       <div v-else class="player__icon" @click="play">
         <icon-play id="play" />
       </div>
-      <progress
-        class="cursor-pointer player__progress"
-        ref="progress"
+      <common-progress
+        class="player__progress"
         max="100"
         value="0"
         @mousedown="rewind"
@@ -103,12 +105,9 @@ function displayTime() {
   }
   &__progress {
     position: absolute;
-    left: 0;
-    right: 0;
+    left: 0px;
+    right: 0px;
     bottom: 35px;
-    padding: 1rem;
-
-    width: 100%;
   }
   &__mask {
     visibility: hidden;
@@ -117,6 +116,7 @@ function displayTime() {
     position: absolute;
     inset: 0;
     transition-delay: 4s;
+    padding: 1rem;
     background: linear-gradient(
         180deg,
         transparent,
