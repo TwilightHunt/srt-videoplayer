@@ -4,22 +4,10 @@ interface ProgessProps {
 }
 
 defineProps<ProgessProps>();
-
-interface CommonProgressEmits {
-  (e: "update:modelValue", value: number): void;
-}
-
-const emits = defineEmits<CommonProgressEmits>();
-
-const onChange = (e: any) => {
-  const target = e.target as HTMLProgressElement;
-  console.log(target.value);
-  emits("update:modelValue", target.value);
-};
 </script>
 
 <template>
-  <progress id="progress" class="cursor-pointer progess" @progress="onChange" />
+  <progress id="progress" class="cursor-pointer progress" />
 </template>
 
 <style lang="scss" scoped>
