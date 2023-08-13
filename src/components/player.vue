@@ -44,10 +44,6 @@ const rewind = (event: MouseEvent) => {
   }
 };
 
-const padTime = (time: number) => {
-  return time.toString().padStart(2, "0");
-};
-
 const changeVolume = (e: Event) => {
   const target = e.target as HTMLInputElement;
   if (video.value) {
@@ -102,6 +98,9 @@ function displayTime() {
 <style lang="scss" scoped>
 .player {
   position: relative;
+  aspect-ratio: 16/9;
+  background-color: #000;
+  overflow: hidden;
   & video {
     width: 100%;
     height: 100%;
