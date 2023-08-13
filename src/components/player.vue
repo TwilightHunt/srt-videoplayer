@@ -5,6 +5,7 @@ import {
   IconPause,
   CommonProgress,
   IconVolumeHigh,
+  CommonSlider,
 } from "~/components";
 
 export interface PlayerProps {
@@ -89,7 +90,7 @@ function displayTime() {
       <div class="player__time">{{ displayedTime }}</div>
       <div class="player__volume d-flex align-items-center">
         <icon-volume-high />
-        <input type="range" @input="changeVolume" />
+        <common-slider @input="changeVolume" />
       </div>
     </div>
   </div>
