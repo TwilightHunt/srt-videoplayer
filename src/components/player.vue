@@ -57,9 +57,12 @@ const changeVolume = (e: Event) => {
 
 function displayTime() {
   const { currentTime } = video.value as HTMLVideoElement;
-  const minutes = Math.floor(currentTime / 60);
-  const seconds = Math.floor(currentTime % 60);
-  const formattedTime = `${padTime(minutes)}:${padTime(seconds)}`;
+  const time = new Date(currentTime * 1000);
+  const localHours = time.getHours() + time.getTimezoneOffset() / 60;
+  const seconds = time.getSeconds().toString().padStart(2, "0");
+  const minutes = time.getMinutes().toString().padStart(2, "0");
+  const hours = localHours.toString().padStart(2, "0");
+  const formattedTime = `${localHours ? hours + ":" : ""}${minutes}:${seconds}`;
   displayedTime.value = formattedTime;
 }
 </script>
