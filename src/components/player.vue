@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, type Ref } from "vue";
+import { computed, ref, type Ref } from "vue";
+import { secondsToTimePad } from "~/composables/useTime";
 import {
   IconPlay,
   IconPause,
@@ -7,8 +8,7 @@ import {
   IconVolumeHigh,
   CommonSlider,
 } from "~/components";
-
-export interface PlayerProps {
+interface PlayerProps {
   src: string;
 }
 defineProps<PlayerProps>();
@@ -16,6 +16,7 @@ defineProps<PlayerProps>();
 const video: Ref<HTMLVideoElement | undefined> = ref();
 const isVideoPlayed: Ref<boolean> = ref(false);
 const displayedTime: Ref<string> = ref("00:00");
+const videoDuration: Ref<string> = ref("00:00");
 
 const play = () => {
   video.value?.play();
@@ -54,14 +55,12 @@ const changeVolume = (e: Event) => {
 
 function displayTime() {
   const { currentTime } = video.value as HTMLVideoElement;
-  const time = new Date(currentTime * 1000);
-  const localHours = time.getHours() + time.getTimezoneOffset() / 60;
-  const seconds = time.getSeconds().toString().padStart(2, "0");
-  const minutes = time.getMinutes().toString().padStart(2, "0");
-  const hours = localHours.toString().padStart(2, "0");
-  const formattedTime = `${localHours ? hours + ":" : ""}${minutes}:${seconds}`;
-  displayedTime.value = formattedTime;
+  displayedTime.value = secondsToTimePad(currentTime);
 }
+
+const displayVideoDuration = () => {
+  videoDuration.value = secondsToTimePad(video?.value?.duration);
+};
 </script>
 
 <template>
@@ -69,6 +68,7 @@ function displayTime() {
     <video
       @ended="pause"
       @timeupdate="displayProgress"
+      @loadedmetadata="displayVideoDuration"
       ref="video"
       class="player__video"
     >
@@ -87,7 +87,7 @@ function displayTime() {
         value="0"
         @mousedown="rewind"
       />
-      <div class="player__time">{{ displayedTime }}</div>
+      <div class="player__time">{{ displayedTime }} / {{ videoDuration }}</div>
       <div class="player__volume d-flex align-items-center">
         <icon-volume-high />
         <common-slider @input="changeVolume" />
