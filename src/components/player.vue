@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, type Ref } from "vue";
+import { ref, type Ref } from "vue";
 import { secondsToTimePad } from "~/composables/useTime";
+import srtParser2 from "srt-parser-2";
 import {
   IconPlay,
   IconPause,
@@ -10,8 +11,9 @@ import {
 } from "~/components";
 interface PlayerProps {
   src: string;
+  subs: string;
 }
-defineProps<PlayerProps>();
+const props = defineProps<PlayerProps>();
 
 const video: Ref<HTMLVideoElement | undefined> = ref();
 const isVideoPlayed: Ref<boolean> = ref(false);
@@ -60,6 +62,16 @@ function displayTime() {
 
 const displayVideoDuration = () => {
   videoDuration.value = secondsToTimePad(video?.value?.duration);
+  displayTrack();
+};
+
+const displayTrack = () => {
+  let track = video.value!.addTextTrack("captions", "Captions", "en");
+  let parser = new srtParser2();
+  let srt_array = parser.fromSrt(props.subs);
+  srt_array.forEach(({ startSeconds, endSeconds, text }) => {
+    track.addCue(new VTTCue(startSeconds, endSeconds, text));
+  });
 };
 </script>
 
@@ -71,11 +83,12 @@ const displayVideoDuration = () => {
       @loadedmetadata="displayVideoDuration"
       ref="video"
       class="player__video"
+      controls
     >
       <source :src="src" />
     </video>
     <div class="player__mask">
-      <div v-if="isVideoPlayed" class="player__icon" @click="pause">
+      <div v-if="isVideoPlayed" class="player__icon d-none" @click="pause">
         <icon-pause id="pause" />
       </div>
       <div v-else class="player__icon" @click="play">
