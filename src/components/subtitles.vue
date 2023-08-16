@@ -4,8 +4,8 @@ const subStore = useSubtitlesStore();
 </script>
 
 <template>
-  <div class="subtitles">
-    <h1>{{ subStore.currentSubtitles.text }}</h1>
+  <div class="subtitles py-4">
+    <h1 class="text-center">{{ subStore.currentSubtitles.text }}</h1>
   </div>
 </template>
 
