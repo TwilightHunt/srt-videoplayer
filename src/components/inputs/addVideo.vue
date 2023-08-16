@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IconPlus } from ".";
+import { IconPlus } from "~/components";
 </script>
 
 <template>
@@ -8,7 +8,7 @@ import { IconPlus } from ".";
       type="file"
       id="video-file"
       accept="video/mp4,video/x-m4v,video/*"
-      @change="$emit('onSelectVideo', $event)"
+      @change="$emit('onSelect', $event)"
     />
     <label for="video-file">
       <div class="add__body">

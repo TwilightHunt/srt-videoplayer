@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref, type Ref } from "vue";
 import { secondsToTimePad } from "~/composables/useTime";
-import srtParser2 from "srt-parser-2";
-import { useSubtitlesStore } from "~/stores/subtitles";
 import {
   IconPlay,
   IconPause,
@@ -10,12 +8,13 @@ import {
   IconVolumeHigh,
   CommonSlider,
 } from "~/components";
+
 interface PlayerProps {
   src: string;
   subs: string;
 }
-const props = defineProps<PlayerProps>();
-const subStore = useSubtitlesStore();
+defineProps<PlayerProps>();
+
 const video: Ref<HTMLVideoElement | undefined> = ref();
 const isVideoPlayed: Ref<boolean> = ref(false);
 const displayedTime: Ref<string> = ref("00:00");
@@ -64,29 +63,6 @@ function displayTime() {
 const displayVideoDuration = () => {
   videoDuration.value = secondsToTimePad(video?.value?.duration);
 };
-
-const displayTrack = () => {
-  const track = video.value!.addTextTrack("captions", "Captions");
-  const parser = new srtParser2();
-  const srt_array = parser.fromSrt(props.subs);
-  track.addEventListener("cuechange", (ev) => {
-    const target = ev.target as TextTrack;
-    if (target.activeCues?.length) {
-      const cue = target.activeCues[0] as VTTCue;
-      subStore.currentSubtitles = cue;
-    } else {
-      subStore.currentSubtitles = "";
-    }
-  });
-  srt_array.forEach(({ startSeconds, endSeconds, text }) => {
-    track.addCue(new VTTCue(startSeconds, endSeconds, text));
-  });
-};
-
-const onVideoLoad = () => {
-  displayVideoDuration();
-  displayTrack();
-};
 </script>
 
 <template>
@@ -94,8 +70,9 @@ const onVideoLoad = () => {
     <video
       @ended="pause"
       @timeupdate="displayProgress"
-      @loadedmetadata="onVideoLoad"
+      @loadedmetadata="displayVideoDuration"
       ref="video"
+      id="video"
       class="player__video"
     >
       <source :src="src" />
