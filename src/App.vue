@@ -15,7 +15,7 @@ const selectSubs = (e: Event) => {
   const target = e.target as HTMLInputElement;
   const file = target.files![0];
   const reader = new FileReader();
-  reader.onload = (event) => (subText.value = event!.target!.result); // desired file content
+  reader.onload = (event) => (subText.value = event!.target!.result);
   reader.onerror = (error) => console.log(error);
   reader.readAsText(file);
 };

@@ -21,8 +21,6 @@ const isVideoPlayed: Ref<boolean> = ref(false);
 const displayedTime: Ref<string> = ref("00:00");
 const videoDuration: Ref<string> = ref("00:00");
 
-const currentSubtitles: Ref<string> = ref("");
-
 const play = () => {
   video.value?.play();
   isVideoPlayed.value = true;
