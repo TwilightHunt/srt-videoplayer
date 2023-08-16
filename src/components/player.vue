@@ -2,6 +2,7 @@
 import { ref, type Ref } from "vue";
 import { secondsToTimePad } from "~/composables/useTime";
 import srtParser2 from "srt-parser-2";
+import { useSubtitlesStore } from "~/stores/subtitles";
 import {
   IconPlay,
   IconPause,
@@ -14,11 +15,13 @@ interface PlayerProps {
   subs: string;
 }
 const props = defineProps<PlayerProps>();
-
+const subStore = useSubtitlesStore();
 const video: Ref<HTMLVideoElement | undefined> = ref();
 const isVideoPlayed: Ref<boolean> = ref(false);
 const displayedTime: Ref<string> = ref("00:00");
 const videoDuration: Ref<string> = ref("00:00");
+
+const currentSubtitles: Ref<string> = ref("");
 
 const play = () => {
   video.value?.play();
@@ -62,16 +65,29 @@ function displayTime() {
 
 const displayVideoDuration = () => {
   videoDuration.value = secondsToTimePad(video?.value?.duration);
-  displayTrack();
 };
 
 const displayTrack = () => {
-  let track = video.value!.addTextTrack("captions", "Captions", "en");
-  let parser = new srtParser2();
-  let srt_array = parser.fromSrt(props.subs);
+  const track = video.value!.addTextTrack("captions", "Captions");
+  const parser = new srtParser2();
+  const srt_array = parser.fromSrt(props.subs);
+  track.addEventListener("cuechange", (ev) => {
+    const target = ev.target as TextTrack;
+    if (target.activeCues?.length) {
+      const cue = target.activeCues[0] as VTTCue;
+      subStore.currentSubtitles = cue;
+    } else {
+      subStore.currentSubtitles = "";
+    }
+  });
   srt_array.forEach(({ startSeconds, endSeconds, text }) => {
     track.addCue(new VTTCue(startSeconds, endSeconds, text));
   });
+};
+
+const onVideoLoad = () => {
+  displayVideoDuration();
+  displayTrack();
 };
 </script>
 
@@ -80,15 +96,14 @@ const displayTrack = () => {
     <video
       @ended="pause"
       @timeupdate="displayProgress"
-      @loadedmetadata="displayVideoDuration"
+      @loadedmetadata="onVideoLoad"
       ref="video"
       class="player__video"
-      controls
     >
       <source :src="src" />
     </video>
     <div class="player__mask">
-      <div v-if="isVideoPlayed" class="player__icon d-none" @click="pause">
+      <div v-if="isVideoPlayed" class="player__icon" @click="pause">
         <icon-pause id="pause" />
       </div>
       <div v-else class="player__icon" @click="play">

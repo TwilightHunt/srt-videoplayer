@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Player, AddVideo } from "./components";
+import { Player, AddVideo, Subtitles } from "./components";
 
 const videoSource = ref();
 const subText = ref();
@@ -32,7 +32,7 @@ const selectSubs = (e: Event) => {
         type="video/mp4"
       />
       <add-video v-else @onSelectVideo="selectVideo" />
-      <subtitles v-if="subText" :source="subText" />
+      <subtitles v-if="subText" />
       <input v-else @input="selectSubs" type="file" accept=".vtt,pdf,.srt" />
     </div>
   </main>

@@ -4,3 +4,4 @@ export { default as AddVideo } from "./addVideo.vue";
 export * from "./common";
 export * from "./icons";
 export { default as Player } from "./player.vue";
+export { default as Subtitles } from "./subtitles.vue";
