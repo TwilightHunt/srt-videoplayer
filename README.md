@@ -1,6 +1,6 @@
 # srt-videoplayer
 
-Easy way to watch uploaded video and subtitles and use chrome text extensions.
+Easy way to watch uploaded video and subtitles and use your browser's text extensions.
 - Custom videoplayer 
 - SRT/VTT support
 - Open source
